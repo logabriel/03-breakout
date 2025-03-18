@@ -18,6 +18,7 @@ class PauseState(BaseState):
         self.live_factor = params["live_factor"]
         self.points_to_next_live = params["points_to_next_live"]
         self.powerups = params["powerups"]
+        self.timer_attached_ball = params.get("play_state.timer_attached_ball", 0)
         settings.SOUNDS["pause"].play()
 
     def render(self, surface: pygame.Surface) -> None:
@@ -51,6 +52,9 @@ class PauseState(BaseState):
 
         self.brickset.render(surface)
         self.paddle.render(surface)
+        
+        for ball in self.balls:
+            ball.render(surface)
 
         render_text(
             surface,
@@ -76,4 +80,5 @@ class PauseState(BaseState):
                 live_factor=self.live_factor,
                 powerups=self.powerups,
                 resume=True,
+                timer_attached_ball=self.timer_attached_ball,
             )

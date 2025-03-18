@@ -16,6 +16,7 @@ from gale.factory import AbstractFactory
 from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
+from gale.timer import Timer
 
 import settings
 import src.powerups
@@ -44,6 +45,8 @@ class PlayState(BaseState):
 
         self.powerups_abstract_factory = AbstractFactory("src.powerups")
 
+        self.timer_attached_ball = params.get("timer_attached_ball", 0)
+
     def update(self, dt: float) -> None:
         self.paddle.update(dt)
 
@@ -52,12 +55,28 @@ class PlayState(BaseState):
             ball.solve_world_boundaries()
 
             # Check collision with the paddle
-            if ball.collides(self.paddle):
+            if ball.collides(self.paddle) and not ball.sticky:
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
                 ball.rebound(self.paddle)
                 ball.push(self.paddle)
+            elif ball.collides(self.paddle) and ball.sticky:
+                settings.SOUNDS["paddle_hit"].stop()
+                settings.SOUNDS["paddle_hit"].play()
+                ball.attached_paddle(self.paddle)
 
+            #check attached ball with paddle
+            if ball.sticky:
+                self.timer_attached_ball += dt
+
+            if self.timer_attached_ball >= 10:
+                self.timer_attached_ball = 0
+                for ball in self.balls:
+                    ball.sticky = False
+            
+            if ball.attached_ball:
+                ball.set_position_ball(self.paddle)
+            
             # Check collision with brickset
             if not ball.collides(self.brickset):
                 continue
@@ -91,6 +110,15 @@ class PlayState(BaseState):
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("TwoMoreBall").create(
+                        r.centerx - 8, r.centery - 8
+                    )
+                )
+            
+            # Chance to generate attached ball
+            if random.random() < 0.5:
+                r = brick.get_collision_rect()
+                self.powerups.append(
+                    self.powerups_abstract_factory.get_factory("AttachedBall").create(
                         r.centerx - 8, r.centery - 8
                     )
                 )
@@ -192,6 +220,22 @@ class PlayState(BaseState):
                 self.paddle.vx = settings.PADDLE_SPEED
             elif input_data.released and self.paddle.vx > 0:
                 self.paddle.vx = 0
+        elif input_id == "enter":
+            if input_data.pressed:
+                for ball in self.balls:
+                    if ball.attached_ball:
+                        if self.paddle.vx < 0:
+                            ball.vx = random.randint(-80, -50)
+                            ball.vy = random.randint(-170, -100)
+                            ball.attached_ball = False
+                        elif self.paddle.vx > 0:
+                            ball.vx = random.randint(50, 80)
+                            ball.vy = random.randint(-170, -100)
+                            ball.attached_ball = False
+                        elif self.paddle.vx == 0:
+                            ball.vx = 0
+                            ball.vy = random.randint(-170, -100)
+                            ball.attached_ball = False
         elif input_id == "pause" and input_data.pressed:
             self.state_machine.change(
                 "pause",
@@ -204,4 +248,5 @@ class PlayState(BaseState):
                 points_to_next_live=self.points_to_next_live,
                 live_factor=self.live_factor,
                 powerups=self.powerups,
+                timer_attached_ball=self.timer_attached_ball,
             )

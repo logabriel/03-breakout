@@ -31,6 +31,10 @@ class Ball:
         self.frame = random.randint(0, 6)
         self.active = True
 
+        self.sticky = False #True pegajosa,  False no pegajosa. (que puede pegarse a la paddle)
+        self.attached_ball = False # True bola aderida, False bola no aderida
+        self.difference = 0
+
     def get_collision_rect(self) -> pygame.Rect:
         return pygame.Rect(self.x, self.y, self.width, self.height)
 
@@ -126,3 +130,13 @@ class Ball:
             self.vx = -50 - 8 * d
         elif d < 0 and paddle.vx > 0 and pr.right < settings.VIRTUAL_HEIGHT:
             self.vx = 50 - 8 * d
+
+    def attached_paddle(self, paddle: Paddle) -> None:
+        self.vx = 0
+        self.vy = 0
+        self.difference = self.x - paddle.x
+        self.y = paddle.y - self.height
+        self.attached_ball = True
+
+    def set_position_ball(self, paddle: Paddle) -> None:
+        self.x = paddle.x + self.difference 
