@@ -16,7 +16,7 @@ from gale.factory import AbstractFactory
 from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
-from gale.timer import Timer
+from src.CannonBall import CannonBall
 
 import settings
 import src.powerups
@@ -59,23 +59,23 @@ class PlayState(BaseState):
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
                 ball.rebound(self.paddle)
-                ball.push(self.paddle)
+                ball.push(self.paddle.get_collision_rect(), self.paddle.vx)
             elif ball.collides(self.paddle) and ball.sticky:
                 settings.SOUNDS["paddle_hit"].stop()
                 settings.SOUNDS["paddle_hit"].play()
-                ball.attached_paddle(self.paddle)
+                ball.attached_paddle(self.paddle.x)
 
             #check attached ball with paddle
             if ball.sticky:
                 self.timer_attached_ball += dt
 
-            if self.timer_attached_ball >= 10:
+            if self.timer_attached_ball >= 7:
                 self.timer_attached_ball = 0
                 for ball in self.balls:
                     ball.sticky = False
             
             if ball.attached_ball:
-                ball.set_position_ball(self.paddle)
+                ball.set_position_ball(self.paddle.x)
             
             # Check collision with brickset
             if not ball.collides(self.brickset):
@@ -88,6 +88,10 @@ class PlayState(BaseState):
 
             brick.hit()
             self.score += brick.score()
+
+            if type(ball) == CannonBall:
+                ball.active = False
+
             ball.rebound(brick)
 
             # Check earn life
@@ -115,10 +119,19 @@ class PlayState(BaseState):
                 )
             
             # Chance to generate attached ball
-            if random.random() < 0.5:
+            if random.random() < 0.12:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("AttachedBall").create(
+                        r.centerx - 8, r.centery - 8
+                    )
+                )
+            
+            # Chance to generate pair cannons
+            if random.random() < 0.5:
+                r = brick.get_collision_rect()
+                self.powerups.append(
+                    self.powerups_abstract_factory.get_factory("PairCannons").create(
                         r.centerx - 8, r.centery - 8
                     )
                 )
@@ -236,6 +249,11 @@ class PlayState(BaseState):
                             ball.vx = 0
                             ball.vy = random.randint(-170, -100)
                             ball.attached_ball = False
+        elif input_id == "fire":
+            if input_data.released:
+                self.paddle.fire(self)
+                self.paddle.cannon_left.active_cannon = False
+                self.paddle.cannon_right.active_cannon = False
         elif input_id == "pause" and input_data.pressed:
             self.state_machine.change(
                 "pause",

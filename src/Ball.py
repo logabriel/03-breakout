@@ -14,7 +14,6 @@ from typing import Any, Tuple, Optional
 import pygame
 
 import settings
-from src.Paddle import Paddle
 
 
 class Ball:
@@ -118,25 +117,25 @@ class Ball:
             self.y += shift_y
             self.vy *= -1
 
-    def push(self, paddle: Paddle) -> None:
+    def push(self, paddle_rec: pygame.Rect, paddle_vx: int) -> None:
         """
         Push the ball according to the position that it collides with the paddle and the paddle speed.
         """
         br = self.get_collision_rect()
-        pr = paddle.get_collision_rect()
+        pr = paddle_rec
         d = pr.centerx - br.x
 
-        if d > 0 and paddle.vx < 0 and pr.x > 0:
+        if d > 0 and paddle_vx < 0 and pr.x > 0:
             self.vx = -50 - 8 * d
-        elif d < 0 and paddle.vx > 0 and pr.right < settings.VIRTUAL_HEIGHT:
+        elif d < 0 and paddle_vx > 0 and pr.right < settings.VIRTUAL_HEIGHT:
             self.vx = 50 - 8 * d
 
-    def attached_paddle(self, paddle: Paddle) -> None:
+    def attached_paddle(self, paddle_x: int) -> None:
         self.vx = 0
         self.vy = 0
-        self.difference = self.x - paddle.x
-        self.y = paddle.y - self.height
+        self.difference = self.x - paddle_x
+        self.y = settings.VIRTUAL_HEIGHT - 32 - self.height
         self.attached_ball = True
 
-    def set_position_ball(self, paddle: Paddle) -> None:
-        self.x = paddle.x + self.difference 
+    def set_position_ball(self, paddle_x: int) -> None:
+        self.x = paddle_x + self.difference 
