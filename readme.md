@@ -25,7 +25,7 @@ El proyecto sigue la siguiente estructura:
         *   `timer.py`: Implementación de la clase Timer para manejar la duración del power-up.
         *   `floating_text.py`: Clase para mostrar textos flotantes en la pantalla.
     *   `Breakout.py`: Clase principal del juego.
-    *   `main.py`: Punto de entrada del juego.
+*   `main.py`: Punto de entrada del juego.
 *   `settings.py`: Contiene la configuración del juego (dimensiones de la ventana, rutas de los recursos, etc.).
 
 ## Implementación del Power-Up de la Moneda Dorada
