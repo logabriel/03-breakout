@@ -43,8 +43,6 @@ class PowerUp:
         surface.blit(
             settings.TEXTURES["spritesheet"],
             (self.x, self.y),
-            settings.TEXTURES["coin"],
-            (self.x, self.y),
             settings.FRAMES["powerups"][self.frame],
         )
 
