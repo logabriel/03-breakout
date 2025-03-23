@@ -12,39 +12,15 @@ Este proyecto es una implementación del clásico juego Breakout en Python utili
 ## Estructura de Carpetas
 
 El proyecto sigue la siguiente estructura:
-
-03-breakout-master/
-├── assets/
-│ ├── sounds/
-│ │ └── powerup.wav
-│ ├── fonts/
-│ └── graphics/
-│ ├── goldencoin.png
-│ └── spritesheet.png
-├── src/
-│ ├── powerups/
-│ │ ├── init.py
-│ │ └── gold_coin.py
-│ │ └── powerup.py
-│ ├── states/
-│ │ └── play_state.py
-│ ├── utilities/
-│ │ ├── timer.py
-│ │ └── floating_text.py
-│ ├── Breakout.py
-│ └── main.py
-├── settings.py
-└── README.md
-
-
+0
 *   `assets/`: Contiene los recursos del juego (sonidos, fuentes, gráficos).
 *   `src/`: Contiene el código fuente del juego.
     *   `powerups/`: Implementación de los power-ups.
-        *   `gold_coin.py`: Lógica del power-up de la Moneda Dorada.
-        *   `powerup.py`: Clase base para los power-ups.
+        *   `GoldCoin.py`: Lógica del power-up de la Moneda Dorada.
+        *   `PowerUp.py`: Clase base para los power-ups.
         *   `__init__.py`: Inicializa el paquete `powerups`.
     *   `states/`: Implementación de los estados del juego.
-        *   `play_state.py`: Lógica del estado de juego principal.
+        *   `PlayState.py`: Lógica del estado de juego principal.
     *   `utilities/`: Clases de utilidad.
         *   `timer.py`: Implementación de la clase Timer para manejar la duración del power-up.
         *   `floating_text.py`: Clase para mostrar textos flotantes en la pantalla.
