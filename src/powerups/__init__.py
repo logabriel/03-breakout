@@ -12,5 +12,6 @@ from src.powerups.PowerUp import PowerUp
 from src.powerups.TwoMoreBall import TwoMoreBall
 from src.powerups.AttachedBall import AttachedBall
 from src.powerups.PairCannons import PairCannons
+from src.powerups.GoldCoin import GoldCoin
 
-(PowerUp, TwoMoreBall, AttachedBall, PairCannons)
+(PowerUp, TwoMoreBall, AttachedBall, PairCannons, GoldCoin)
