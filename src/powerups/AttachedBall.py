@@ -1,3 +1,10 @@
+"""
+Assignment 3: Breakout
+Author: Gabriel Perez 
+
+This file contains the Power Up specialization to make balls stick to the paddle.
+"""
+
 import random
 from typing import TypeVar
 

@@ -9,10 +9,7 @@ class GoldCoin(PowerUp):
         super().__init__(x, y, frame=0)  
         self.multiplier = 2
         self.duration = 10
-        self.active = True
         self.texture = settings.TEXTURES["coin"]
-        self.x = x
-        self.y = y
 
     def render(self, surface: pygame.Surface) -> None:
         if self.active:
@@ -46,7 +43,7 @@ class GoldCoin(PowerUp):
             "duration": 1.0,
             "color": (255, 0, 0)
         })
-
+    
     def update(self, dt: float) -> None:
         if self.active:
             self.y += settings.POWERUP_SPEED * dt

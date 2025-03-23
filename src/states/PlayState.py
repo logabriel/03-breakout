@@ -17,8 +17,8 @@ from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
 from src.CannonBall import CannonBall
-from src.utilities.floating_text import FloatingText
 from src.powerups.GoldCoin import GoldCoin
+from src.utilities.floating_text import FloatingText
 
 import settings
 import src.powerups
@@ -114,7 +114,7 @@ class PlayState(BaseState):
                 self.paddle.inc_size()
 
             # Chance to generate two more balls
-            if random.random() < 0.1:
+            if random.random() < settings.POWERUP_SPAWN_CHANCE:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("TwoMoreBall").create(
@@ -123,7 +123,7 @@ class PlayState(BaseState):
                 )
             
             # Chance to generate attached ball
-            if random.random() < 0.12:
+            if random.random() < settings.POWERUP_SPAWN_CHANCE:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("AttachedBall").create(
@@ -132,13 +132,14 @@ class PlayState(BaseState):
                 )
             
             # Chance to generate pair cannons
-            if random.random() < 0.5:
+            if random.random() < settings.POWERUP_SPAWN_CHANCE:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("PairCannons").create(
                         r.centerx - 8, r.centery - 8
                     )
                 )
+            
             # Chance to generate GoldCoin
             if random.random() < settings.POWERUP_SPAWN_CHANCE:
                 r = brick.get_collision_rect()
