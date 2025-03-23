@@ -17,6 +17,8 @@ from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
 from src.CannonBall import CannonBall
+from src.utilities.floating_text import FloatingText
+from src.powerups.GoldCoin import GoldCoin
 
 import settings
 import src.powerups
@@ -37,6 +39,8 @@ class PlayState(BaseState):
             + settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
         )
         self.powerups = params.get("powerups", [])
+        self.score_multiplier = 1
+        self.floating_texts = []
 
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
@@ -87,7 +91,7 @@ class PlayState(BaseState):
                 continue
 
             brick.hit()
-            self.score += brick.score()
+            self.score += brick.score() * self.score_multiplier
 
             if type(ball) == CannonBall:
                 ball.active = False
@@ -135,6 +139,10 @@ class PlayState(BaseState):
                         r.centerx - 8, r.centery - 8
                     )
                 )
+            # Chance to generate GoldCoin
+            if random.random() < settings.POWERUP_SPAWN_CHANCE:
+                r = brick.get_collision_rect()
+                self.powerups.append(GoldCoin(r.centerx - 8, r.centery - 8))
 
         # Removing all balls that are not in play
         self.balls = [ball for ball in self.balls if ball.active]
@@ -159,14 +167,19 @@ class PlayState(BaseState):
                 )
 
         # Update powerups
-        for powerup in self.powerups:
+        for powerup in self.powerups[:]: 
             powerup.update(dt)
-
-            if powerup.collides(self.paddle):
+            if powerup.active and powerup.collides(self.paddle):  # Comprobar si está activo
                 powerup.take(self)
+            elif not powerup.active:  # Eliminar si ya no está activo
+                self.powerups.remove(powerup)
 
-        # Remove powerups that are not in play
-        self.powerups = [p for p in self.powerups if p.active]
+        # Update floating texts
+        for text in self.floating_texts[:]:
+            text["y"] -= 1  # Mover hacia arriba
+            text["duration"] -= dt
+            if text["duration"] <= 0:
+                self.floating_texts.remove(text)
 
         # Check victory
         if self.brickset.size == 1 and next(
@@ -221,6 +234,16 @@ class PlayState(BaseState):
 
         for powerup in self.powerups:
             powerup.render(surface)
+
+        for text in self.floating_texts[:]:
+            render_text(
+                surface,
+                text["text"],
+                settings.FONTS["small"],
+                text["x"],
+                text["y"],
+                text["color"],
+            )
 
     def on_input(self, input_id: str, input_data: InputData) -> None:
         if input_id == "move_left":
