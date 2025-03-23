@@ -51,6 +51,8 @@ LIVE_POINTS_BASE = 2000
 PADDLE_GROW_UP_POINTS = 200
 
 POWERUP_SPEED = 50
+# Probabilidad de spawnear un power-up al romper un ladrillo
+POWERUP_SPAWN_CHANCE = 0.1  # 10%
 
 BASE_DIR = Path(__file__).parent
 
@@ -84,6 +86,7 @@ TEXTURES = {
     "hearts": pygame.image.load(BASE_DIR / "assets" / "graphics" / "hearts.png"),
     "arrows": pygame.image.load(BASE_DIR / "assets" / "graphics" / "arrows.png"),
     "cannons": pygame.image.load(BASE_DIR / "assets" / "graphics" / "cannons.png"),
+    "coin": pygame.image.load(BASE_DIR / "assets" / "graphics" / "goldencoin.png"),
 }
 
 FRAMES = {
